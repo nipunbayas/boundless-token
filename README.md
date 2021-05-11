@@ -1,2 +1,2 @@
-# boundless-token
-Contains source code for boundless-token
+# Boundless Token
+Contains source code for Boundless Token.
