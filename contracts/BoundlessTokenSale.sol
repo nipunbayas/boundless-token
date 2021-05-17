@@ -3,7 +3,7 @@ pragma solidity ^0.5.16;
 import "./BoundlessToken.sol";
 
 contract BoundlessTokenSale {
-    address admin;
+    address payable admin;
     BoundlessToken public tokenContract;
     uint256 public tokenPrice;
     uint256 public tokensSold;
@@ -40,7 +40,19 @@ contract BoundlessTokenSale {
 
         // keep track of the number of tokens sold
         tokensSold += _numberOfTokens;
+
         // trigger sell event
         emit Sell(msg.sender, _numberOfTokens);
+    }
+
+    function endSale() public {
+        // only an admin can perform this functionality
+        require(msg.sender == admin);
+
+        // transfer the remaining tokens to the admin
+        require(tokenContract.transfer(admin, tokenContract.balanceOf(address(this))));
+
+        // destroy this contract
+        admin.transfer(address(this).balance);
     }
 }

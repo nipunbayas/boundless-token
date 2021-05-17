@@ -37,7 +37,7 @@ contract('BoundlessTokenSale', function (accounts) {
             // then grab token sale instance
             tokenSaleInstance = instance;
             // provision 75% of all tokens to the BoundlessTokenSale contract
-            return tokenInstance.transfer(tokenSaleInstance.address, tokensAvailable, {from: admin});
+            return tokenInstance.transfer(tokenSaleInstance.address, tokensAvailable, { from: admin });
         }).then(function(receipt) {
             assert.equal(receipt.logs.length, 1, 'triggers one event');
             return tokenSaleInstance.buyTokens(numberOfTokens, { from: buyer, value: value });
@@ -68,5 +68,33 @@ contract('BoundlessTokenSale', function (accounts) {
         }).then(assert.fail).catch(function(error) {
             assert(error.message.indexOf('revert' >= 0, 'cannot purchase more tokens than available in the contract'));
         });
-    })
+    });
+
+    it('ends token sale', function() {
+        return BoundlessToken.deployed().then(function(instance) {
+            // grab token instance first
+            tokenInstance = instance;
+            return BoundlessTokenSale.deployed();
+        }).then(function(instance) {
+            // then grab token sale instance
+            tokenSaleInstance = instance;
+            // try to end sale from account other than the admin
+            return tokenSaleInstance.endSale({ from: buyer });
+        }).then(assert.fail).catch(function(error) {
+            assert(error.message.indexOf('revert') >= 0, 'must be admin to end sale');
+
+            // end sale as admin
+            return tokenSaleInstance.endSale({ from: admin });
+        }).then(function(receipt) {
+            return tokenInstance.balanceOf(admin);
+        }).then(function(balance) {
+            // 10 tokens were sold in the previous test
+            assert.equal(balance.toNumber(), 999990, 'returns all unsold tokens to admin');
+
+            // check that tokenPrice was reset when selfDestruct was called
+            return web3.eth.getBalance(tokenSaleInstance.address);
+        }).then(function(balance) {
+            assert.equal(balance, 0);
+        });
+    });
 });
