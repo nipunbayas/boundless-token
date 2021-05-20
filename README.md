@@ -34,3 +34,9 @@ Contains source code for Boundless Token.
 - ```tokenInstance.transferFrom(fromAccount, toAccount, 10, { from: spendingAccount });```
 
 - ```tokenInstance.allowance(fromAccount, spendingAccount);```
+
+### For running Geth
+
+- ```geth --rinkeby -- rpc --rpcapi="personal,eth,network,w3,net" --ipcpath="\\.\pipe\geth.ipc"```
+
+- ```geth attach ipc:\\.\pipe\geth.ipc``` , then ```eth.syncing```
