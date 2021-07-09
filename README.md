@@ -1,6 +1,8 @@
 # Boundless Token
 Contains source code for Boundless Token.
 
+ICO is available at https://nipunbayas.github.io/boundless-token/
+
 ### Commands to test on Truffle Console
 
 - ```BoundlessToken.deployed().then(function(instance) { tokenInstance = instance; });```
